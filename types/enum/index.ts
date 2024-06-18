@@ -1,3 +1,6 @@
 export * from './usertype'
 export * from './payment-status'
 export * from './order-status'
+export * from './category-type'
+export * from './platfrom-type'
+export * from './system-type'

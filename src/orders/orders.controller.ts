@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { ICreateOrderDto, OrderQueryParam } from 'types/interface/order';
+import { ICreateOrderDto, IUpdatedOrderDto, OrderQueryParam } from 'types/interface/order';
 
 
 
@@ -19,5 +19,17 @@ export class OrdersController {
   }
 
   @Get(':id')
-async 
+  async findById(@Param('id') id: string) {
+    return await this.ordersService.findById(id)
+  }
+
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() iupdateDto: IUpdatedOrderDto) {
+    return await this.ordersService.update(id, iupdateDto)
+  }
+
+  @Delete('id')
+  async remove(@Param('id') id: string) {
+    return await this.ordersService.remove(id)
+  }
 }
