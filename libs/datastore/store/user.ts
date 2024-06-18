@@ -4,8 +4,9 @@ import { User, UserDocument } from "../schema";
 import { Model } from 'mongoose';
 import { IQueryResponse } from "types/interface/common";
 import { IUserQueryParam } from "types/interface/user/user-query-parma";
-import { getSortPaging, listenResponse, responseHandler } from "../utlis";
+import { getSortPaging, listenResponse } from "../utlis";
 import { ICreateUserDto, IUpdateUserDto } from "types";
+import { promises } from "dns";
 
 @Injectable()
 export class UserStore {
@@ -13,6 +14,7 @@ export class UserStore {
 
     async findAll(query: IUserQueryParam): Promise<IQueryResponse<UserDocument>> {
         const queryObject: any = {}
+
         if (query?.role) {
             queryObject.role = query.role
         }
@@ -27,7 +29,7 @@ export class UserStore {
         return listenResponse(item, query, queryObject, this.model)
     }
 
-    async create(icreateDto: ICreateUserDto) {
+    async create(icreateDto: ICreateUserDto): Promise<UserDocument> {
         const modelObject = await this.model.create({
             ...icreateDto,
             createdAt: new Date()
@@ -36,18 +38,19 @@ export class UserStore {
 
     }
 
-    async findById(id: string) {
+    async findById(id: string): Promise<UserDocument> {
         const modelObject = await this.model.findById(id)
         return modelObject
     }
 
-    async update(id: string, updateUserDto: IUpdateUserDto) {
+    async update(id: string, updateUserDto: IUpdateUserDto): Promise<UserDocument> {
         const modelObject = await this.model.findByIdAndUpdate(id, { $set: { ...updateUserDto } }, { new: true }).exec()
         return modelObject
 
     }
 
-    async remove(id: string) {
+    async remove(id: string): Promise<UserDocument> {
         const modelObject = await this.model.findByIdAndDelete(id)
+        return modelObject
     }
 }

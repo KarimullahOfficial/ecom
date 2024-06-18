@@ -1,8 +1,9 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { CATEGORY_TYPE_ARRAY, SYSTEM_TYPE_ARRAY } from "types";
 import { FeedBack, FeedBackSchema } from "./common";
 import { StockKeepingUnit, StockKeepingUnitSchema } from "./common/stock-keeping-unit";
 
+export type ProductDocument = Product & Document
 @Schema()
 export class Product {
     @Prop({ required: true })
@@ -35,8 +36,14 @@ export class Product {
     @Prop([{ type: FeedBackSchema }])
     feedbackDetails: FeedBack[];
 
+    @Prop()
+    createdAt: Date;
+
+    @Prop()
+    updatedAt: Date;
+
     @Prop([{ type: StockKeepingUnitSchema }])
     skuDetails: StockKeepingUnit[];
 
-
 }
+export const ProductSchema = SchemaFactory.createForClass(Product)

@@ -22,6 +22,7 @@ export class OrderStore {
             .sort(sort)
             .skip(skip)
             .limit(limit)
+            .exec()
         return listenResponse(items, this.model, query, queryObject)
 
     }
