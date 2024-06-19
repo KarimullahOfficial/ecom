@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { IAddress, IPayementInfo, ORDER_STATUS_ARRAY } from "types";
 import { AddressSchema, PayementInfoSchema } from "./common";
+import { LicenceSchema } from "./common/licence-schema";
 export type OrderDocument = Document & Orders
 @Schema()
 export class OrderItems {
@@ -28,7 +29,7 @@ export class OrderItems {
     @Prop({ required: true })
     productName: string;
 
-    @Prop({ default: [] })
+    @Prop({ default: [], type: LicenceSchema })
     licenses: string[];
 }
 

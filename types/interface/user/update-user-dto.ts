@@ -1,4 +1,6 @@
 import { IUserDto } from "./base-user-dto";
 export interface IUpdateUserDto extends IUserDto {
-    updateAt: Date
+    updateAt: Date;
+    oldPassword?: string;
+    newPassword?: string;
 }

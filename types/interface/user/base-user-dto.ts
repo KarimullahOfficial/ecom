@@ -5,6 +5,7 @@ export interface IUserDto {
     role: string;
     otpExpiryTime: Date;
     createdAt: Date
+    secrectToen?: string
     isVerified: boolean
     otp: string;
 }

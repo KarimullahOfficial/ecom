@@ -4,7 +4,7 @@ import { Product, ProductDocument } from "../schema/product";
 import { Model } from 'mongoose'
 import { IQueryResponse } from "types";
 import { ICreateProductDto, IProductQueryParam, IUpdatedProductDto } from "types/interface/product";
-import { getSortPaging, listenResponse } from "../utlis";
+import { getSortPaging, listResponse, } from "../utlis";
 
 
 @Injectable()
@@ -24,7 +24,7 @@ export class ProductStore {
             .skip(skip)
             .limit(limit)
             .exec()
-        return listenResponse(items, query, queryObject, this.model)
+        return listResponse(items, query, queryObject, this.model)
     }
 
     async create(icreateProductDto: ICreateProductDto): Promise<ProductDocument> {

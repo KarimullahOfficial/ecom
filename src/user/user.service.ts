@@ -12,6 +12,11 @@ export class UserService {
 
   }
 
+  async forgetPassword(email: string) {
+    return await this.store.forgotPassword(email)
+  }
+
+
   async findAll(query: IUserQueryParam) {
     return await this.store.findAll(query)
   }

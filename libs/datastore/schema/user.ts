@@ -21,6 +21,9 @@ export class User {
     password: string;
 
     @Prop()
+    secrectToen: string
+
+    @Prop()
     otpExpiryTime: Date;
 
     @Prop({ default: 'customer', required: true, enum: USER_ROLE_ARRAY })

@@ -4,7 +4,7 @@ import { OrderDocument, Orders } from "../schema/order";
 import { Model } from 'mongoose';
 import { IQueryResponse } from "types";
 import { ICreateOrderDto, IUpdatedOrderDto, OrderQueryParam } from "types/interface/order";
-import { getSortPaging, listenResponse } from "../utlis";
+import { getSortPaging, listResponse, } from "../utlis";
 
 @Injectable()
 export class OrderStore {
@@ -23,7 +23,7 @@ export class OrderStore {
             .skip(skip)
             .limit(limit)
             .exec()
-        return listenResponse(items, this.model, query, queryObject)
+        return listResponse(items, this.model, query, queryObject)
 
     }
 
