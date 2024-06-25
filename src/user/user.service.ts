@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserStore } from 'libs/datastore';
+import { UserStore, comparePassword } from 'libs/datastore';
 import { ICreateUserDto, IUpdateUserDto, IUserQueryParam } from 'types';
 
 
@@ -32,6 +32,23 @@ export class UserService {
 
   async remove(id: string) {
     return await this.store.remove(id)
+  }
+
+
+  async forgotPassword(email: string) {
+    return this.store.forgotPassword(email)
+  }
+
+  async login(email: string, password: string) {
+    return this.store.login(email, password)
+  }
+
+  async verifyEmail(otp: string, email: string) {
+    return this.store.verifyEmail(otp, email)
+  }
+
+  async sendOtpEmail(email: string) {
+    return this.store.sendOtpEmail(email)
   }
 
 }

@@ -217,12 +217,10 @@ export class UserStore {
             message: 'Otp sent successfully',
             result: { email: user.email },
         };
-    } catch(error) {
-        throw error;
-    }
+    }  
 
     async forgotPassword(email: string) {
-        try {
+       
             const user = await this.model.findOne({ email, });
             if (!user) {
                 throw new Error('User not found');
@@ -256,10 +254,10 @@ export class UserStore {
                 message: 'Password sent to your email',
                 result: { email: user.email, password: tempPassword },
             };
-        } catch (error) {
-            throw error;
-        }
+        
     }
+
+    
 
     async sendEmail(to: string, templateName: string, subject: string, templateVars: Record<string, any> = {}): Promise<any> {
         try {

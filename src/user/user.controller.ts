@@ -1,8 +1,7 @@
 import { Controller, Get, Post, Body, Param, Delete, Query, Put, Res } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ICreateUserDto, ILogInDto, IUpdateUserDto, IUserQueryParam } from 'types';
+import { ICreateUserDto, IUpdateUserDto, IUserQueryParam } from 'types';
 import { Response } from 'express'
-
 
 
 @Controller('user')
@@ -15,10 +14,30 @@ export class UserController {
 
   }
 
-  @Post('login')
-  async login(@Body() loginDto: ILogInDto) {
-
+  @Post('/login')
+  async login(@Body() email: string, password: string, @Res({ passthrough: true }) response: Response,) {
+    const loginRes = await this.userService.login(email, password);
+    if (loginRes.success) {
+      response.cookie('_digi_auth_token', loginRes.result?.token, {
+        httpOnly: true,
+      });
+    }
+    delete loginRes.result?.token;
+    return loginRes;
   }
+
+  @Get('/verify-email/:otp/:email')
+  async verifyEmail(@Param('otp') otp: string, @Param('email') email: string) {
+    return await this.userService.verifyEmail(otp, email);
+  }
+
+  @Get('send-otp-email/:email')
+  async sendOtpEmail(@Param('email') email: string) {
+    return await this.userService.sendOtpEmail(email);
+  }
+  
+  
+  S
 
   @Put('/logout')
   async logout(@Res() res: Response) {
@@ -33,7 +52,6 @@ export class UserController {
   async forgotPassword(@Param('email') email: string) {
     return await this.userService.forgetPassword(email);
   }
-
 
   @Get()
   async findAll(@Query() query: IUserQueryParam) {
