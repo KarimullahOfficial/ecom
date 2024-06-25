@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User, UserDocument } from "../schema";
 import { Model } from 'mongoose';
@@ -40,7 +40,8 @@ export class UserStore {
 
 
     async create(icreateDto: ICreateUserDto): Promise<{ success: boolean, message: string, result: { email: string } }> {
-        icreateDto.password = await this.generateHashPassword(icreateDto.password);
+        const { email, password } = icreateDto
+        icreateDto.password = await this.generateHashPassword(password);
 
         // Check if it's for admin
         if (
@@ -53,9 +54,9 @@ export class UserStore {
         }
 
         // Check if user already exists
-        const existingUser = await this.model.findOne({ email: icreateDto.eamil });
+        const existingUser = await this.model.findOne({ email });
         if (existingUser) {
-            throw new Error('User already exists');
+            throw new BadRequestException('User already exists');
         }
 
         // Generate OTP
@@ -72,7 +73,7 @@ export class UserStore {
         });
 
         // Send email if the new user is not an admin
-        if (newUser.role !== 'ADMIN') {
+        if (newUser.role !== 'admin') {
             await sendEmail(
                 newUser.email,
                 this.configService.get<string>('emailService.emailTemplates.verifyEmail'),

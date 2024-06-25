@@ -1,6 +1,6 @@
 export interface IUserDto {
     name: string;
-    eamil: string;
+    email: string;
     password: string;
     role: string;
     otpExpiryTime: Date;
