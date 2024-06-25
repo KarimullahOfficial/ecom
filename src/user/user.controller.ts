@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Query, Put, Res } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ICreateUserDto, IUpdateUserDto, IUserQueryParam } from 'types';
+import { ICreateUserDto, ILogInDto, IUpdateUserDto, IUserQueryParam } from 'types';
 import { Response } from 'express'
 
 
@@ -15,7 +15,8 @@ export class UserController {
   }
 
   @Post('/login')
-  async login(@Body() email: string, password: string, @Res({ passthrough: true }) response: Response,) {
+  async login(@Body() loginDto: ILogInDto, @Res({ passthrough: true }) response: Response,) {
+    const { email, password } = loginDto;
     const loginRes = await this.userService.login(email, password);
     if (loginRes.success) {
       response.cookie('_digi_auth_token', loginRes.result?.token, {
@@ -35,9 +36,7 @@ export class UserController {
   async sendOtpEmail(@Param('email') email: string) {
     return await this.userService.sendOtpEmail(email);
   }
-  
-  
-  S
+
 
   @Put('/logout')
   async logout(@Res() res: Response) {

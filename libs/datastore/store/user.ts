@@ -7,7 +7,7 @@ import { IUserQueryParam } from "types/interface/user/user-query-parma";
 import { getSortPaging, listResponse, } from "../utlis";
 import { ICreateUserDto, IUpdateUserDto } from "types";
 import * as bcrypt from 'bcrypt';
-const FormData = require('form-data'); 
+const FormData = require('form-data');
 import config from '@nestjs/config';
 import axios from 'axios';
 import { ConfigService } from "@nestjs/config";
@@ -44,11 +44,11 @@ export class UserStore {
 
         // Check if it's for admin
         if (
-            icreateDto.role === 'ADMIN' &&
+            icreateDto.role === 'admin' &&
             icreateDto.secrectToen !== this.configService.get<string>('adminSecretToken')
         ) {
             throw new Error('Not allowed to create admin');
-        } else if (icreateDto.role !== 'CUSTOMER') {
+        } else if (icreateDto.role !== 'customer') {
             icreateDto.isVerified = true;
         }
 
@@ -120,7 +120,7 @@ export class UserStore {
                         role: userExists.role,
                         id: userExists._id.toString(),
                     },
-                    token,
+                    token: userExists,
                 },
             };
         } catch (error) {
@@ -158,7 +158,7 @@ export class UserStore {
         }
     }
     async findById(id: string): Promise<UserDocument> {
-        const modelObject = await this.model.findById(id)
+        const modelObject = (await this.model.findById(id))
         return modelObject
     }
 
@@ -217,47 +217,47 @@ export class UserStore {
             message: 'Otp sent successfully',
             result: { email: user.email },
         };
-    }  
-
-    async forgotPassword(email: string) {
-       
-            const user = await this.model.findOne({ email, });
-            if (!user) {
-                throw new Error('User not found');
-            }
-            let password = Math.random().toString(36).substring(2, 12);
-            const tempPassword = password;
-            password = await this.generateHashPassword(password);
-            await this.model.updateOne(
-                {
-                    _id: user._id,
-                },
-                {
-                    password,
-                },
-            );
-
-            sendEmail(
-                user.email,
-                this.configService.get('emailService.emailTemplates.forgotPassword'),
-                'Forgot password - Digizone',
-                {
-                    customerName: user.name,
-                    customerEmail: user.email,
-                    newPassword: password,
-                    loginLink: this.configService.get('loginLink'),
-                },
-            );
-
-            return {
-                success: true,
-                message: 'Password sent to your email',
-                result: { email: user.email, password: tempPassword },
-            };
-        
     }
 
-    
+    async forgotPassword(email: string) {
+
+        const user = await this.model.findOne({ email, });
+        if (!user) {
+            throw new Error('User not found');
+        }
+        let password = Math.random().toString(36).substring(2, 12);
+        const tempPassword = password;
+        password = await this.generateHashPassword(password);
+        await this.model.updateOne(
+            {
+                _id: user._id,
+            },
+            {
+                password,
+            },
+        );
+
+        sendEmail(
+            user.email,
+            this.configService.get('emailService.emailTemplates.forgotPassword'),
+            'Forgot password - Digizone',
+            {
+                customerName: user.name,
+                customerEmail: user.email,
+                newPassword: password,
+                loginLink: this.configService.get('loginLink'),
+            },
+        );
+
+        return {
+            success: true,
+            message: 'Password sent to your email',
+            result: { email: user.email, password: tempPassword },
+        };
+
+    }
+
+
 
     async sendEmail(to: string, templateName: string, subject: string, templateVars: Record<string, any> = {}): Promise<any> {
         try {
