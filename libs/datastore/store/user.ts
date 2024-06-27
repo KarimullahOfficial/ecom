@@ -88,7 +88,7 @@ export class UserStore {
 
         return {
             success: true,
-            message: newUser.role === 'ADMIN'
+            message: newUser.role === 'admin'
                 ? 'Admin created successfully'
                 : 'Please activate your account by verifying your email. We have sent you an email with the OTP.',
             result: { email: newUser.email },
@@ -121,7 +121,7 @@ export class UserStore {
                         role: userExists.role,
                         id: userExists._id.toString(),
                     },
-                    token: userExists,
+                    token,
                 },
             };
         } catch (error) {
