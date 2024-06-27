@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { User, UserSchema, UserStore } from 'libs/datastore';
+import { AuthMiddleware, RolesGuard, User, UserSchema, UserStore } from 'libs/datastore';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+
 
 @Module({
   imports: [
@@ -11,6 +13,19 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule,
   ],
   controllers: [UserController],
-  providers: [UserService, UserStore],
+  providers: [
+    UserService,
+    UserStore,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
-export class UserModule { }
+export class UserModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes({ path: '/user', method: RequestMethod.GET });
+  }
+}

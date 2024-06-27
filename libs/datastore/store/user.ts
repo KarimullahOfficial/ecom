@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User, UserDocument } from "../schema";
 import { Model } from 'mongoose';
@@ -39,17 +39,17 @@ export class UserStore {
 
 
 
-    async create(icreateDto: ICreateUserDto): Promise<{ success: boolean, message: string, result: { email: string } }> {
-        const { email, password } = icreateDto
+    async create(icreateDto: ICreateUserDto): Promise<{ success: boolean; message: string; result: { email: string } }> {
+        const { email, password, role, secretToken } = icreateDto;
         icreateDto.password = await this.generateHashPassword(password);
 
         // Check if it's for admin
         if (
-            icreateDto.role === 'admin' &&
-            icreateDto.secrectToen !== this.configService.get<string>('adminSecretToken')
+            role === 'ADMIN' &&
+            secretToken !== this.configService.get<string>('adminSecretToken')
         ) {
-            throw new Error('Not allowed to create admin');
-        } else if (icreateDto.role !== 'customer') {
+            throw new BadRequestException('Not allowed to create admin');
+        } else if (role !== 'CUSTOMER') {
             icreateDto.isVerified = true;
         }
 
@@ -65,12 +65,17 @@ export class UserStore {
         otpExpiryTime.setMinutes(otpExpiryTime.getMinutes() + 10);
 
         // Create new user
-        const newUser = await this.model.create({
-            ...icreateDto,
-            createdAt: new Date(),
-            otp,
-            otpExpiryTime,
-        });
+        let newUser;
+        try {
+            newUser = await this.model.create({
+                ...icreateDto,
+                createdAt: new Date(),
+                otp,
+                otpExpiryTime,
+            });
+        } catch (error) {
+            throw new InternalServerErrorException('Error creating user');
+        }
 
         // Send email if the new user is not an admin
         if (newUser.role !== 'admin') {

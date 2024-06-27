@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete, Query, Put, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Query, Put, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ICreateUserDto, ILogInDto, IUpdateUserDto, IUserQueryParam } from 'types';
+import { ICreateUserDto, ILogInDto, IUpdateUserDto, IUserQueryParam, UserRole } from 'types';
 import { Response } from 'express'
+import { Role, RolesGuard } from 'libs/datastore';
 
 
 @Controller('user')
+
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
@@ -53,6 +55,7 @@ export class UserController {
   }
 
   @Get()
+  @Role(UserRole.admin)
   async findAll(@Query() query: IUserQueryParam) {
     return await this.userService.findAll(query)
   }
